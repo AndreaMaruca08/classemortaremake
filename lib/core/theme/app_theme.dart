@@ -53,6 +53,9 @@ class AppTheme {
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: AppColors.surface,
+      floatingLabelStyle: const TextStyle(color: AppColors.textPrimary),
+      labelStyle: const TextStyle(color: AppColors.textPrimary),
+      prefixIconColor: AppColors.textPrimary,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
@@ -60,6 +63,10 @@ class AppTheme {
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppColors.primary, width: 2),
       ),
     ),
   );
@@ -113,6 +120,9 @@ class AppTheme {
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: AppColors.surfaceDark,
+      floatingLabelStyle: const TextStyle(color: AppColors.textPrimaryDark),
+      labelStyle: const TextStyle(color: AppColors.textPrimaryDark),
+      prefixIconColor: AppColors.textPrimaryDark,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
@@ -120,6 +130,10 @@ class AppTheme {
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppColors.primaryDark, width: 2),
       ),
     ),
   );

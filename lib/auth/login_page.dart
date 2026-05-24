@@ -3,6 +3,7 @@ import 'package:classemortaremake/core/extension/spacing_extension.dart';
 import 'package:classemortaremake/core/extension/theme_extension.dart';
 import 'package:classemortaremake/core/widgets/app_button.dart';
 import 'package:flutter/material.dart';
+import '../home/home_page.dart';
 import '../localStorage/save.dart';
 
 class LoginPage extends StatefulWidget {
@@ -38,21 +39,25 @@ class _LoginPageState extends State<LoginPage> {
 
       if (response == null) {
         if (mounted) {
-          _showErrorAlert("Login Failed", "Invalid credentials. Please try again.");
+          _showErrorAlert("Login Fallito", "Credenziali non valide. Riprova.");
         }
         return;
       }
-
       await Save().saveStringList([code, password]);
 
       if (mounted) {
+        final userType = code.toUpperCase().startsWith('S') ? "Studente" : "Genitore";
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Successfully logged in")),
+          SnackBar(content: Text("Accesso eseguito come: $userType")),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage(studentCode: code)),
         );
       }
     } catch (e) {
       if (mounted) {
-        _showErrorAlert("Connection Error", "Could not reach the server.");
+        _showErrorAlert("Errore di Connessione", "Impossibile raggiungere il server.");
       }
     } finally {
       if (mounted) {
@@ -63,12 +68,12 @@ class _LoginPageState extends State<LoginPage> {
 
   bool _validateInputs(String code, String password) {
     if (code.isEmpty || password.isEmpty) {
-      _showErrorAlert("Required Fields", "Please enter both student code and password.");
+      _showErrorAlert("Campi Obbligatori", "Inserisci sia il codice studente che la password.");
       return false;
     }
 
     if (!code.toUpperCase().startsWith('S') && !code.toUpperCase().startsWith('G')) {
-      _showErrorAlert("Invalid Code", "The student code must start with 'S' or 'G'.");
+      _showErrorAlert("Codice non valido", "Il codice studente deve iniziare con 'S' o 'G'.");
       return false;
     }
 
@@ -124,7 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                 TextField(
                   controller: _codeController,
                   decoration: const InputDecoration(
-                    labelText: "Codice studente (ex: S171...U)",
+                    labelText: "Codice studente (es: S171...U)",
                     prefixIcon: Icon(Icons.person_outline_rounded),
                   ),
                   textCapitalization: TextCapitalization.characters,

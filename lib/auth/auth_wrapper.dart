@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../core/api/http_client.dart';
 import '../localStorage/save.dart';
-import 'loginPage.dart';
+import '../home/home_page.dart';
+import 'login_page.dart';
 
 class AuthWrapper extends StatefulWidget {
   final bool isPreviousYear;
@@ -37,8 +38,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
       if (response != null && response['token'] != null) {
         setState(() {
-          // TODO: Update MainPage once ApiService is refactored into features
-          // _destinationPage = MainPage(studentCode: credentials.code);
+          _destinationPage = HomePage(studentCode: credentials.code);
           _isLoading = false;
         });
       } else {

@@ -1,26 +1,29 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Settings{
-  int msAnimation;
-  int graphicAnimation;
-  int columnGraphicAnimation;
+class Settings {
+  int gradeAnimationMs;
+  int trendChartAnimationMs;
+  int numbersChartAnimationMs;
+
   Settings({
-    required this.msAnimation,
-    required this.graphicAnimation,
-    required this.columnGraphicAnimation,
+    required this.gradeAnimationMs,
+    required this.trendChartAnimationMs,
+    required this.numbersChartAnimationMs,
   });
 
-  Future<void> salvaImpostazioni() async {
+  Future<void> saveSettings() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('msAnimation', msAnimation);
-    await prefs.setInt('graphicAnimation', graphicAnimation);
-    await prefs.setInt('columnGraphicAnimation', columnGraphicAnimation);
+    await prefs.setInt('msAnimazioneVoto', gradeAnimationMs);
+    await prefs.setInt(
+        'AnimazioneGraficoAndamento', trendChartAnimationMs);
+    await prefs.setInt('AnimazioneGraficoNumeri', numbersChartAnimationMs);
   }
 
-  Future<void> caricaImpostazioni() async {
+  Future<void> loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
-    msAnimation = prefs.getInt('msAnimazioneVoto') ?? 1500;
-    graphicAnimation = prefs.getInt('AnimazioneGraficoAndamento') ?? 1500;
-    columnGraphicAnimation = prefs.getInt('AnimazioneGraficoNumeri') ?? 1200;
+    gradeAnimationMs = prefs.getInt('msAnimazioneVoto') ?? 1500;
+    trendChartAnimationMs =
+        prefs.getInt('AnimazioneGraficoAndamento') ?? 1500;
+    numbersChartAnimationMs = prefs.getInt('AnimazioneGraficoNumeri') ?? 1200;
   }
 }

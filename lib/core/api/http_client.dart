@@ -1,16 +1,27 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../../settings/settings.dart';
+
 class HttpClient {
   static final HttpClient _instance = HttpClient._internal();
   factory HttpClient() => _instance;
-  HttpClient._internal();
+  HttpClient._internal() {
+    settings = Settings(
+      gradeAnimationMs: 1500,
+      trendChartAnimationMs: 1500,
+      numbersChartAnimationMs: 1200,
+    );
+  }
 
   String? token;
   String? phpSessId;
   String? studentCode;
   String? password;
+  String? firstName;
+  String? lastName;
   bool isPreviousYear = false;
+  late Settings settings;
 
   String get numericCode => studentCode?.replaceAll(RegExp(r'[a-zA-Z]'), "") ?? '';
 
@@ -58,6 +69,8 @@ class HttpClient {
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
       token = json['token'];
+      firstName = json['firstName'];
+      lastName = json['lastName'];
       return json;
     }
     return null;
