@@ -22,6 +22,7 @@ class OverviewData {
   final List<Info> tests;
   final List<Info> otherAgenda;
   final List<Info> forTomorrow;
+  final List<int> eventCounts;
 
   OverviewData({
     required this.achievements,
@@ -40,6 +41,7 @@ class OverviewData {
     required this.tests,
     required this.otherAgenda,
     required this.forTomorrow,
+    required this.eventCounts,
   });
 
   factory OverviewData.fromJson(Map<String, dynamic> json) {
@@ -92,6 +94,7 @@ class OverviewData {
       tests: Info.fromJsonListTests(agendaJson),
       otherAgenda: Info.fromJsonOther(agendaJson),
       forTomorrow: Info.fromJsonForTomorrow(agendaJson),
+      eventCounts: Info.getTimes(agendaJson),
     );
   }
 

@@ -17,7 +17,8 @@ class CircleProgressPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final Offset center = Offset(size.width / 2, size.height / 2);
-    final double radius = math.min(size.width / 2, size.height / 2) - strokeWidth / 2;
+    final double radius =
+        math.min(size.width / 2, size.height / 2) - strokeWidth / 2;
 
     final Paint backgroundPaint = Paint()
       ..color = backgroundColor
@@ -86,7 +87,7 @@ class CircularProgressBar extends StatelessWidget {
             painter: CircleProgressPainter(
               progress: progress,
               strokeWidth: strokeWidth,
-              backgroundColor: color.withOpacity(0.3),
+              backgroundColor: color.withOpacity(0.2),
               progressColor: color,
             ),
           ),

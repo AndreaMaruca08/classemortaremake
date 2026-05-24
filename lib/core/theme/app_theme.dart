@@ -14,6 +14,23 @@ class AppTheme {
       error: AppColors.error,
       onPrimary: Colors.white,
     ),
+    drawerTheme: DrawerThemeData(
+      backgroundColor: AppColors.background,
+      surfaceTintColor: Colors.transparent, // Evita l'effetto violaceo di Material 3
+    ),
+    iconTheme: const IconThemeData(
+      color: AppColors.primary,
+      size: 24,
+    ),
+    listTileTheme: ListTileThemeData(
+      iconColor: AppColors.primary,
+      textColor: AppColors.textPrimary,
+      titleTextStyle: TextStyle(
+        fontFamily: AppFont.primary,
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
     textTheme: TextTheme(
       titleLarge: TextStyle(
         fontSize: 24,
@@ -81,6 +98,23 @@ class AppTheme {
       surface: AppColors.surfaceDark,
       error: AppColors.error,
       onPrimary: Colors.white,
+    ),
+    drawerTheme: DrawerThemeData(
+      backgroundColor: AppColors.backgroundDark,
+      surfaceTintColor: Colors.transparent,
+    ),
+    iconTheme: const IconThemeData(
+      color: AppColors.secondaryDark,
+      size: 24,
+    ),
+    listTileTheme: ListTileThemeData(
+      iconColor: AppColors.primaryDark,
+      textColor: AppColors.textPrimaryDark,
+      titleTextStyle: TextStyle(
+        fontFamily: AppFont.primary,
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+      ),
     ),
     textTheme: TextTheme(
       titleLarge: TextStyle(

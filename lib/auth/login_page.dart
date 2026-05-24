@@ -3,11 +3,11 @@ import 'package:classemortaremake/core/extension/spacing_extension.dart';
 import 'package:classemortaremake/core/extension/theme_extension.dart';
 import 'package:classemortaremake/core/widgets/app_button.dart';
 import 'package:flutter/material.dart';
-import '../home/home_page.dart';
 import '../localStorage/save.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final VoidCallback onLoginSuccess;
+  const LoginPage({super.key, required this.onLoginSuccess});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -50,10 +50,8 @@ class _LoginPageState extends State<LoginPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Accesso eseguito come: $userType")),
         );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage(studentCode: code)),
-        );
+        // Chiamiamo il callback invece di navigare
+        widget.onLoginSuccess();
       }
     } catch (e) {
       if (mounted) {

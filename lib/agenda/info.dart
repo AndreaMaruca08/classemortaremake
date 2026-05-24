@@ -27,7 +27,7 @@ class Info {
     }
 
     return Info(
-      subject: json['subjectDesc'] as String? ?? "null",
+      subject: json['subjectDesc'] as String? ?? "Non specificata",
       teacherName: json['authorName'] as String? ?? "Insegnante sconosciuto",
       description: json['notes'] as String? ?? "Nessuna descrizione",
       date: begin.isNotEmpty ? begin : "Data non disponibile",

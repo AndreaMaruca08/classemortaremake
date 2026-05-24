@@ -15,7 +15,7 @@ class AuthWrapper extends StatefulWidget {
 class _AuthWrapperState extends State<AuthWrapper> {
   final Save _storageService = Save();
   bool _isLoading = true;
-  Widget? _destinationPage;
+  bool _isAuthenticated = false;
 
   @override
   void initState() {
@@ -25,34 +25,40 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
   Future<void> _checkAuthentication() async {
     final credentials = await _storageService.getCredentials();
-    
-    if (!mounted) return;
 
     if (credentials != null && credentials.code.isNotEmpty && credentials.pass.isNotEmpty) {
       final client = HttpClient();
       client.init(credentials.code, credentials.pass, widget.isPreviousYear);
-      
-      final response = await client.doLogin();
-      
-      if (!mounted) return;
 
-      if (response != null && response['token'] != null) {
-        setState(() {
-          _destinationPage = HomePage(studentCode: credentials.code);
-          _isLoading = false;
-        });
-      } else {
-        _navigateToLogin();
+      try {
+        final response = await client.doLogin();
+        if (mounted) {
+          setState(() {
+            _isAuthenticated = (response != null && response['token'] != null);
+            _isLoading = false;
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _isAuthenticated = false;
+            _isLoading = false;
+          });
+        }
       }
     } else {
-      _navigateToLogin();
+      if (mounted) {
+        setState(() {
+          _isAuthenticated = false;
+          _isLoading = false;
+        });
+      }
     }
   }
 
-  void _navigateToLogin() {
+  void _onLoginSuccess() {
     setState(() {
-      _destinationPage = const LoginPage();
-      _isLoading = false;
+      _isAuthenticated = true;
     });
   }
 
@@ -60,12 +66,14 @@ class _AuthWrapperState extends State<AuthWrapper> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
-    
-    return _destinationPage ?? const LoginPage();
+
+    if (_isAuthenticated) {
+      return HomePage(studentCode: HttpClient().studentCode ?? '');
+    }
+
+    return LoginPage(onLoginSuccess: _onLoginSuccess);
   }
 }

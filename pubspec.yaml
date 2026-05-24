@@ -1,6 +1,6 @@
 name: classemortaremake
 description: "The remake of Classemorta mobile"
-version: 1.0.0+1
+version: 1.0.0
 
 environment:
   sdk: ^3.8.1
@@ -15,6 +15,8 @@ dependencies:
   intl: ^0.20.2
   shared_preferences: ^2.1.2
   url_launcher: ^6.3.0
+  fl_chart: ^0.70.2
+  table_calendar: ^3.1.2
 
 dev_dependencies:
   flutter_test:
