@@ -2,6 +2,14 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter/material.dart';
 
+import 'calendar/holidays_page.dart';
+import 'didactic/didactic_page.dart';
+import 'lessons/schedule_page.dart';
+import 'notes/notes_page.dart';
+import 'pcto/pcto_page.dart';
+import 'noticeboard/noticeboard_page.dart';
+import 'absences/absences_page.dart';
+import 'achievement/achievements_page.dart';
 import 'core/theme/app_theme.dart';
 import 'auth/auth_wrapper.dart';
 import 'agenda/agenda_page.dart';
@@ -39,15 +47,16 @@ class ClasseMortaPlus extends StatelessWidget {
         '/home': (context) => const HomePage(studentCode: ''),
         '/subjects': (context) => const SubjectsPage(),
         '/agenda': (context) => const AgendaPage(),
-        '/noticeboard': (context) => _placeholder("Notizie"),
-        '/notes': (context) => _placeholder("Note"),
+        '/absences': (context) => const AbsencesPage(),
+        '/noticeboard': (context) => const NoticeboardPage(),
+        '/notes': (context) => const NotesPage(),
         '/report_cards': (context) => _placeholder("Pagelle"),
-        '/didactic': (context) => _placeholder("Didattica"),
-        '/schedule': (context) => _placeholder("Orari"),
-        '/curriculum': (context) => _placeholder("Curriculum"),
+        '/didactic': (context) => const DidacticPage(),
+        '/schedule': (context) => const SchedulePage(),
+        '/curriculum': (context) => const PctoPage(),
         '/justifications': (context) => _placeholder("Giustifiche"),
-        '/holidays': (context) => _placeholder("Vacanze"),
-        '/achievements': (context) => _placeholder("Trofei"),
+        '/holidays': (context) => const HolidaysPage(),
+        '/achievements': (context) => const AchievementsPage(),
         '/settings': (context) => _placeholder("Impostazioni"),
       },
     );

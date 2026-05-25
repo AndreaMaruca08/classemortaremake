@@ -14,7 +14,7 @@ class Attach{
     );
   }
   static List<Attach> fromJsonList(Map<String, dynamic> json){
-    final attach = json['attachments'];
+    final attach = json['attachments'] as List<dynamic>? ?? [];
     return attach.map<Attach>((json) => Attach.fromJson(json)).toList();
   }
 

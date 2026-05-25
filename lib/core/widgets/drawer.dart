@@ -42,15 +42,32 @@ class AppDrawer extends StatelessWidget {
       child: SafeArea(
         child: Column(
           children: [
-            Padding(
+            Container(
               padding: const EdgeInsets.all(16.0),
+              width: double.infinity,
               child: Row(
                 children: [
-                  Image.asset('assets/icon/icona.png', height: 60, width: 60),
-                  12.width,
-                  Text(
-                    "ClasseMorta Plus",
-                    style: context.textTheme.titleMedium,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.asset(
+                      'assets/icon/icona.png',
+                      width: 50,
+                      height: 50,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Icon(Icons.school, size: 40),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      "ClasseMorta Plus",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               ),
@@ -76,6 +93,11 @@ class AppDrawer extends StatelessWidget {
                     onTap: () => navigateTo('/agenda'),
                   ),
                   _DrawerItem(
+                    icon: Icons.event_busy,
+                    label: "Assenze",
+                    onTap: () => navigateTo('/absences'),
+                  ),
+                  _DrawerItem(
                     icon: Icons.calendar_month,
                     label: "Notizie",
                     onTap: () => navigateTo('/noticeboard'),
@@ -84,11 +106,6 @@ class AppDrawer extends StatelessWidget {
                     icon: Icons.edit_note_outlined,
                     label: "Note",
                     onTap: () => navigateTo('/notes'),
-                  ),
-                  _DrawerItem(
-                    icon: Icons.mark_email_read,
-                    label: "Pagelle",
-                    onTap: () => navigateTo('/report_cards'),
                   ),
                   _DrawerItem(
                     icon: Icons.sticky_note_2_outlined,

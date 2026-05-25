@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../achievement/achievement.dart';
+import '../achievement/streak.dart';
+import '../achievement/streak_detail_page.dart';
 import '../core/api/http_client.dart';
 import '../core/services/external_site_service.dart';
 import '../core/widgets/drawer.dart';
@@ -129,6 +132,12 @@ class _HomePageState extends State<HomePage> {
 
                   final data = snapshot.data!;
                   final averages = GradeService.getGeneralAverages(data.grades);
+                  final streak = Streak().getStreak(data.grades.reversed.toList());
+                  final reachedAchievements = data.achievements.where((a) => a.reached).toList();
+                  final positiveReached = reachedAchievements.where((a) => a.isPositive).length;
+                  final negativeReached = reachedAchievements.where((a) => !a.isPositive).length;
+                  final totalPositive = data.achievements.where((a) => a.isPositive).length;
+                  final totalNegative = data.achievements.where((a) => !a.isPositive).length;
 
                   return Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -165,6 +174,37 @@ class _HomePageState extends State<HomePage> {
 
                         8.height,
 
+                        // Achievements Summary
+                        InkWell(
+                          onTap: () => Navigator.pushNamed(context, '/achievements'),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            decoration: context.containerDecoration,
+                            child: Row(
+                              children: [
+                                const Icon(Icons.emoji_events, color: Colors.orange),
+                                12.width,
+                                const Text(
+                                  "Trofei",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                const Spacer(),
+                                Text(
+                                  "Pos: $positiveReached/$totalPositive",
+                                  style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                                ),
+                                8.width,
+                                Text(
+                                  "Neg: $negativeReached/$totalNegative",
+                                  style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        24.height,
+
                         const Text(
                           "Medie Generali",
                           style: TextStyle(
@@ -196,11 +236,69 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
 
+                        12.height,
+
+                        // Streak Row
+                        Row(
+                          children: [
+                            const Text(
+                              "Ultimi Voti",
+                              style: TextStyle(
+                                  fontSize: 22, fontWeight: FontWeight.bold),
+                            ),
+                            const Spacer(),
+                            GestureDetector(
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => StreakDetailPage(grades: data.grades),
+                                ),
+                              ),
+                              child: _StreakWidget(streak: streak, grades: data.grades),
+                            ),
+                          ],
+                        ),
+                        16.height,
+
+                        // Grades List
+                        Container(
+                          height: 270,
+                          decoration: context.containerDecoration,
+                          child: ListView.separated(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            itemCount: data.grades.length,
+                            separatorBuilder: (context, index) => const Divider(height: 1),
+                            itemBuilder: (context, index) {
+                              final grade = data.grades[index];
+                              // Find previous grade for the same subject
+                              Grade? prev;
+                              for (int i = index + 1; i < data.grades.length; i++) {
+                                if (data.grades[i].subjectCode == grade.subjectCode) {
+                                  prev = data.grades[i];
+                                  break;
+                                }
+                              }
+
+                              return _GradeListTile(
+                                grade: grade,
+                                previousGrade: prev,
+                                animationMs: _client.settings.gradeAnimationMs,
+                              );
+                            },
+                          ),
+                        ),
+
                         32.height,
 
-                        ElevatedButton(
-                          onPressed: _openRegistryWeb,
-                          child: const Text("Apri Registro Web"),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                            ),
+                            onPressed: _openRegistryWeb,
+                            child: const Text("Apri Registro Web"),
+                          ),
                         ),
 
                         const SizedBox(height: 100),
@@ -246,11 +344,6 @@ class _AverageItem extends StatelessWidget {
           title,
           style: context.textTheme.bodySmall,
         ),
-        IconButton(
-          onPressed: () => _navigateToDetail(context),
-          icon: const Icon(Icons.auto_graph_sharp, size: 20),
-          tooltip: 'Dettagli $title',
-        ),
       ],
     );
   }
@@ -268,6 +361,115 @@ class _AverageItem extends StatelessWidget {
           ),
           period: grade.period,
           animationMs: animationMs,
+        ),
+      ),
+    );
+  }
+}
+
+class _StreakWidget extends StatelessWidget {
+  final Streak streak;
+  final List<Grade> grades;
+
+  const _StreakWidget({required this.streak, required this.grades});
+
+  @override
+  Widget build(BuildContext context) {
+    final bool goated = streak.isGoated(grades);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: context.colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: goated ? Colors.yellow : streak.getStreakColor().withOpacity(0.5),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            "   Streak: ",
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          ),
+          Icon(
+            goated ? Icons.star : Icons.local_fire_department,
+            color: goated ? Colors.yellow : streak.getStreakColor(),
+            size: 20,
+          ),
+          Text(
+            " ${goated ? "GOAT" : streak.goodGrades}     ",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: goated ? Colors.yellow : streak.getStreakColor(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GradeListTile extends StatelessWidget {
+  final Grade grade;
+  final Grade? previousGrade;
+  final int animationMs;
+
+  const _GradeListTile({
+    required this.grade,
+    this.previousGrade,
+    required this.animationMs,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GradeDetail(
+              grade: grade,
+              previousGrade: previousGrade,
+              animationMs: animationMs,
+            ),
+          ),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            GradeCircle(
+              grade: grade,
+              previousGrade: previousGrade,
+              size: 65,
+              fontSize: 18,
+              animationMs: animationMs,
+              showDetailOnTap: false,
+            ),
+            16.width,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    grade.subjectFullName,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  4.height,
+                  Text(
+                    "${grade.date} • ${grade.type}",
+                    style: context.textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, size: 24, color: Colors.grey),
+          ],
         ),
       ),
     );

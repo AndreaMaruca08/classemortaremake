@@ -17,7 +17,15 @@ class PageTitle extends StatelessWidget {
         Row(children: [
           12.width,
           AppDrawerButton(scaffoldKey: scaffoldKey),
-          Text(text, style: context.textTheme.titleLarge)
+          12.width,
+          Expanded(
+            child: Text(
+              text,
+              style: context.textTheme.titleLarge,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          12.width,
         ]),
       ],
     );

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:classemortaremake/grades/widgets/grade_circle.dart';
 import 'package:classemortaremake/grades/grade.dart';
-import 'grade.dart';
 
 class HypotheticalPreview extends StatelessWidget {
   final List<Grade> grades;

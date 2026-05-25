@@ -104,25 +104,14 @@ class _GradeCircleState extends State<GradeCircle>
             size: widget.size,
             strokeWidth: widget.size / 10,
             color: _getGradeColor(widget.grade.value),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  widget.grade.displayValue,
-                  style: TextStyle(
-                    fontSize: widget.fontSize,
-                    fontWeight: FontWeight.bold,
-                  ),
+            child: Center(
+              child: Text(
+                widget.grade.displayValue,
+                style: TextStyle(
+                  fontSize: widget.fontSize,
+                  fontWeight: FontWeight.bold,
                 ),
-                if (widget.previousGrade != null)
-                  Text(
-                    "(${widget.previousGrade!.displayValue})",
-                    style: TextStyle(
-                      fontSize: widget.fontSize / 2,
-                      color: Colors.grey,
-                    ),
-                  ),
-              ],
+              ),
             ),
           );
         },

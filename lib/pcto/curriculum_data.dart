@@ -21,10 +21,26 @@ class CurriculumData {
     if (hourString == null || hourString.trim().isEmpty || hourString == 'N/A') {
       return 0;
     }
-    final numericPart = hourString.replaceAll(RegExp(r'[^0-9]'), '');
-    if (numericPart.isEmpty) {
-      return 0;
+    
+    // Improved parsing for ClasseViva formats like "119h 30m" or "119:30"
+    // We try to extract the hour part before any 'h', ':', or space
+    String normalized = hourString.toLowerCase().trim();
+    
+    // If it contains 'h', take everything before it
+    if (normalized.contains('h')) {
+      final part = normalized.split('h').first.replaceAll(RegExp(r'[^0-9]'), '');
+      return int.tryParse(part) ?? 0;
     }
+    
+    // If it contains ':', take everything before it
+    if (normalized.contains(':')) {
+      final part = normalized.split(':').first.replaceAll(RegExp(r'[^0-9]'), '');
+      return int.tryParse(part) ?? 0;
+    }
+
+    // Default fallback: just numbers
+    final numericPart = normalized.replaceAll(RegExp(r'[^0-9]'), '');
+    if (numericPart.isEmpty) return 0;
     return int.tryParse(numericPart) ?? 0;
   }
 }

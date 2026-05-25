@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../grade.dart';
-import '../grade_detail.dart';
 import 'grade_circle.dart';
 
 class GradeDisplay extends StatelessWidget {
