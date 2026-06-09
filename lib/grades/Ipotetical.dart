@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'grade.dart';
 import 'grade_service.dart';
+import 'package:classemortaremake/core/extension/theme_extension.dart';
 
 class IpotetichePage extends StatefulWidget {
   final List<Grade> voti;
@@ -94,7 +95,7 @@ class _IpotetichePageState extends State<IpotetichePage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Card(
-                color: Colors.grey[900],
+                color: context.colorScheme.primary,
                 elevation: 4,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
@@ -146,7 +147,7 @@ class _IpotetichePageState extends State<IpotetichePage> {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12.0),
                     child: DropdownButtonFormField<double>(
-                      value: _newSelectedGrades[index],
+                      initialValue: _newSelectedGrades[index],
                       hint: Text('Seleziona voto ${index + 1}'),
                       isExpanded: true,
                       decoration: InputDecoration(
@@ -184,7 +185,7 @@ class _IpotetichePageState extends State<IpotetichePage> {
                   FilledButton.tonal(
                     onPressed: _newSelectedGrades.length > 1 ? _removeGradeField : null,
                     style: FilledButton.styleFrom(
-                      backgroundColor: Colors.red.withOpacity(0.3),
+                      backgroundColor: Colors.red.withValues(alpha: 0.3),
                     ),
                     child: const Row(
                       children: [

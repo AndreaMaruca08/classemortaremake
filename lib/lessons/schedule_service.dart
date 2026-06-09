@@ -96,6 +96,7 @@ class ScheduleService {
             subject: first.subject,
             teachers: allTeachers,
             hour: hourNum,
+            description: first.description,
           );
         }
       }

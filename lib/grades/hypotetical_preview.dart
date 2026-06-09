@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:classemortaremake/grades/widgets/grade_circle.dart';
 import 'package:classemortaremake/grades/grade.dart';
+import 'package:classemortaremake/core/extension/theme_extension.dart';
+
 
 class HypotheticalPreview extends StatelessWidget {
   final List<Grade> grades;
@@ -123,11 +125,11 @@ class HypotheticalPreview extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[900],
+        color: context.colorScheme.surface,
         borderRadius: const BorderRadius.all(Radius.circular(10)),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Color.fromRGBO(240, 240, 240, 0.2),
+            color: context.colorScheme.primary,
             spreadRadius: 1,
             blurRadius: 1,
             offset: Offset(2, 2),

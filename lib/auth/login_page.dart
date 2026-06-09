@@ -4,6 +4,7 @@ import 'package:classemortaremake/core/extension/theme_extension.dart';
 import 'package:classemortaremake/core/widgets/app_button.dart';
 import 'package:flutter/material.dart';
 import '../localStorage/save.dart';
+import 'credentials.dart';
 
 class LoginPage extends StatefulWidget {
   final VoidCallback onLoginSuccess;
@@ -26,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleLogin() async {
-    final code = _codeController.text.trim();
+    final code = _codeController.text.trim().toUpperCase();
     final password = _passwordController.text.trim();
 
     if (!_validateInputs(code, password)) return;
@@ -34,8 +35,9 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _isLoading = true);
 
     try {
-      HttpClient().init(code, password, false);
-      final response = await HttpClient().doLogin();
+      final client = HttpClient();
+      client.init(code, password, false);
+      final response = await client.doLogin();
 
       if (response == null) {
         if (mounted) {
@@ -43,14 +45,21 @@ class _LoginPageState extends State<LoginPage> {
         }
         return;
       }
-      await Save().saveStringList([code, password]);
+      
+      final creds = Credentials(
+        code: code,
+        pass: password,
+        firstName: response['firstName'],
+        lastName: response['lastName'],
+      );
+      
+      await Save().addAccount(creds);
 
       if (mounted) {
-        final userType = code.toUpperCase().startsWith('S') ? "Studente" : "Genitore";
+        final userType = code.startsWith('S') ? "Studente" : "Genitore";
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Accesso eseguito come: $userType")),
         );
-        // Chiamiamo il callback invece di navigare
         widget.onLoginSuccess();
       }
     } catch (e) {

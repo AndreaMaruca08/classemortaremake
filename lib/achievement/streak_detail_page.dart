@@ -1,10 +1,12 @@
+import 'package:classemortaremake/core/widgets/title.dart';
 import 'package:flutter/material.dart';
 import 'package:classemortaremake/core/extension/spacing_extension.dart';
 import 'package:classemortaremake/core/extension/theme_extension.dart';
 import 'package:classemortaremake/grades/grade.dart';
+import '../core/widgets/drawer.dart';
 import 'streak.dart';
 
-class StreakDetailPage extends StatelessWidget {
+class StreakDetailPage extends StatefulWidget {
   final List<Grade> grades;
   const StreakDetailPage({
     required this.grades,
@@ -12,69 +14,79 @@ class StreakDetailPage extends StatelessWidget {
   });
 
   @override
+  State<StreakDetailPage> createState() => _StreakDetailPageState();
+}
+
+class _StreakDetailPageState extends State<StreakDetailPage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
   Widget build(BuildContext context) {
-    final List<Streak> allStreaks = Streak.getAllStreaks(grades);
-    final Streak currentStreak = Streak().getStreak(grades.reversed.toList());
+    final List<Streak> allStreaks = Streak.getAllStreaks(widget.grades);
+    final Streak currentStreak = Streak().getStreak(widget.grades.reversed.toList());
 
     final int longestStreak = allStreaks.fold(0, (max, s) => s.goodGrades > max ? s.goodGrades : max);
     final int firstStreak = allStreaks.isNotEmpty ? allStreaks.first.goodGrades : 0;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dettaglio Streak'),
-      ),
+      key: _scaffoldKey,
+      drawer: const AppDrawer(),
       body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Riepilogo',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              16.height,
-              _buildStatsRow(currentStreak, longestStreak, firstStreak),
-              24.height,
-              const Divider(),
-              16.height,
-
-              const Text(
-                'Tutte le Streak',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              10.height,
-
-              if (allStreaks.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 32.0),
-                  child: Center(
-                    child: Text(
-                      'Nessuna streak di voti positivi trovata.',
-                      style: context.textTheme.bodyMedium?.copyWith(color: Colors.grey),
-                      textAlign: TextAlign.center,
-                    ),
+        child: Column(
+          children: [
+            PageTitle(text: "Dettaglio Streak", scaffoldKey: _scaffoldKey),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Riepilogo',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
-                )
-              else
-                ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: allStreaks.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final streak = allStreaks[index];
-                    final int streakNumber = allStreaks.length - index;
+                  16.height,
+                  _buildStatsRow(currentStreak, longestStreak, firstStreak),
+                  24.height,
+                  const Divider(),
+                  16.height,
 
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: _StreakItemWidget(streak: streak, number: streakNumber),
-                    );
-                  },
-                ),
-              20.height,
-            ],
-          ),
+                  const Text(
+                    'Tutte le Streak',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  ),
+                  10.height,
+
+                  if (allStreaks.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 32.0),
+                      child: Center(
+                        child: Text(
+                          'Nessuna streak di voti positivi trovata.',
+                          style: context.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    )
+                  else
+                    ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: allStreaks.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final streak = allStreaks[index];
+                        final int streakNumber = allStreaks.length - index;
+
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: _StreakItemWidget(streak: streak, number: streakNumber),
+                        );
+                      },
+                    ),
+                  100.height,
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -141,7 +153,7 @@ class _StreakItemWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       decoration: context.containerDecoration.copyWith(
-        border: Border.all(color: streak.getStreakColor().withOpacity(0.5)),
+        border: Border.all(color: streak.getStreakColor().withValues(alpha: 0.5)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

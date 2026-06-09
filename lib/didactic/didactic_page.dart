@@ -159,7 +159,7 @@ class _ViewIndicator extends StatelessWidget {
       height: 4,
       width: isActive ? 24 : 8,
       decoration: BoxDecoration(
-        color: isActive ? context.colorScheme.primary : Colors.grey.withOpacity(0.3),
+        color: isActive ? context.colorScheme.primary : Colors.grey.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(2),
       ),
     );

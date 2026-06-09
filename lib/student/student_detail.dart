@@ -39,7 +39,7 @@ class _StudentDetailState extends State<StudentDetail> {
                     Text(
                       "Versione 3.0.0 Classemorta plus",
                       style: context.textTheme.bodySmall?.copyWith(
-                        color: context.colorScheme.onSurface.withOpacity(0.7),
+                        color: context.colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                     ),
                     24.height,

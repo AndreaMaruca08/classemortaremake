@@ -81,7 +81,7 @@ class _InfoCardState extends State<InfoCard> {
   @override
   Widget build(BuildContext context) {
     final deadlineColor = _getDeadlineColor(widget.info.endDate);
-    final backgroundColor = deadlineColor.withOpacity(0.3);
+    final backgroundColor = deadlineColor.withValues(alpha: 0.3);
 
     return Opacity(
       opacity: _isDone ? 0.6 : 1.0,
@@ -91,7 +91,7 @@ class _InfoCardState extends State<InfoCard> {
         padding: const EdgeInsets.all(16.0),
         decoration: context.containerDecoration.copyWith(
           color: backgroundColor,
-          border: Border.all(color: deadlineColor.withOpacity(0.7), width: 2),
+          border: Border.all(color: deadlineColor.withValues(alpha: 0.7), width: 2),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

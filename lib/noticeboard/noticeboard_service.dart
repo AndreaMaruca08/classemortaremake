@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import '../core/api/http_client.dart';
 import '../core/services/file_service.dart';
 import 'notice.dart';

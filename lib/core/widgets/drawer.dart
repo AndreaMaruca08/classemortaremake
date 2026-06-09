@@ -1,5 +1,4 @@
 import 'package:classemortaremake/core/api/http_client.dart';
-import 'package:classemortaremake/core/extension/spacing_extension.dart';
 import 'package:classemortaremake/core/extension/theme_extension.dart';
 import 'package:flutter/material.dart';
 
@@ -28,55 +27,49 @@ class AppDrawer extends StatelessWidget {
     final bool isParent = client.studentCode?.startsWith('G') ?? false;
 
     void navigateTo(String? routeName) {
-      // First, always go back to the root (Home)
       Navigator.of(context).popUntil((route) => route.isFirst);
       
-      // If a specific route is requested and it's not home, push it
       if (routeName != null && routeName != '/home') {
         Navigator.of(context).pushNamed(routeName);
       }
     }
 
     return Drawer(
-      width: MediaQuery.of(context).size.width * 0.85,
+      width: MediaQuery.of(context).size.width * 0.65,
       child: SafeArea(
         child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              width: double.infinity,
-              child: Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      'assets/icon/icona.png',
-                      width: 50,
-                      height: 50,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Icon(Icons.school, size: 40),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  const Expanded(
-                    child: Text(
-                      "ClasseMorta Plus",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
+            UserAccountsDrawerHeader(
+              margin: EdgeInsets.zero,
+              decoration: BoxDecoration(
+                color: context.colorScheme.surface,
+              ),
+              currentAccountPicture: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  'assets/icon/icona.png',
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.school, size: 40),
+                ),
+              ),
+              accountName: Text(
+                "ClasseMorta Plus",
+                style: TextStyle(
+                  color: context.colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+              accountEmail: Text(
+                "${client.firstName ?? ''} ${client.lastName ?? ''}",
+                style: TextStyle(color: context.colorScheme.onSurface.withValues(alpha: 0.7)),
               ),
             ),
-            const Divider(),
             Expanded(
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
+                  // --- PRINCIPALI ---
                   _DrawerItem(
                     icon: Icons.home_outlined,
                     label: "Home",
@@ -84,7 +77,7 @@ class AppDrawer extends StatelessWidget {
                   ),
                   _DrawerItem(
                     icon: Icons.medical_information_rounded,
-                    label: "Materie",
+                    label: "Medie materie",
                     onTap: () => navigateTo('/subjects'),
                   ),
                   _DrawerItem(
@@ -92,20 +85,19 @@ class AppDrawer extends StatelessWidget {
                     label: "Compiti",
                     onTap: () => navigateTo('/agenda'),
                   ),
+                  
+                  const Divider(indent: 16, endIndent: 16),
+                  
+                  // --- DIDATTICA E LEZIONI ---
                   _DrawerItem(
-                    icon: Icons.event_busy,
-                    label: "Assenze",
-                    onTap: () => navigateTo('/absences'),
+                    icon: Icons.list_alt_rounded,
+                    label: "Lezioni",
+                    onTap: () => navigateTo('/lessons'),
                   ),
                   _DrawerItem(
-                    icon: Icons.calendar_month,
-                    label: "Notizie",
-                    onTap: () => navigateTo('/noticeboard'),
-                  ),
-                  _DrawerItem(
-                    icon: Icons.edit_note_outlined,
-                    label: "Note",
-                    onTap: () => navigateTo('/notes'),
+                    icon: Icons.watch_later,
+                    label: "Orario",
+                    onTap: () => navigateTo('/schedule'),
                   ),
                   _DrawerItem(
                     icon: Icons.sticky_note_2_outlined,
@@ -113,14 +105,23 @@ class AppDrawer extends StatelessWidget {
                     onTap: () => navigateTo('/didactic'),
                   ),
                   _DrawerItem(
-                    icon: Icons.watch_later,
-                    label: "Orari",
-                    onTap: () => navigateTo('/schedule'),
+                    icon: Icons.people_outline,
+                    label: "Docenti",
+                    onTap: () => navigateTo('/teachers'),
+                  ),
+
+                  const Divider(indent: 16, endIndent: 16),
+
+                  // --- ASSENZE E NOTE ---
+                  _DrawerItem(
+                    icon: Icons.event_busy,
+                    label: "Assenze",
+                    onTap: () => navigateTo('/absences'),
                   ),
                   _DrawerItem(
-                    icon: Icons.book,
-                    label: "Curriculum",
-                    onTap: () => navigateTo('/curriculum'),
+                    icon: Icons.edit_note_outlined,
+                    label: "Note/Annotazioni",
+                    onTap: () => navigateTo('/notes'),
                   ),
                   if (isParent)
                     _DrawerItem(
@@ -128,6 +129,25 @@ class AppDrawer extends StatelessWidget {
                       label: "Giustifiche",
                       onTap: () => navigateTo('/justifications'),
                     ),
+
+                  const Divider(indent: 16, endIndent: 16),
+
+                  // --- COMUNICAZIONI E ALTRO ---
+                  _DrawerItem(
+                    icon: Icons.calendar_month,
+                    label: "Bacheca",
+                    onTap: () => navigateTo('/noticeboard'),
+                  ),
+                  _DrawerItem(
+                    icon: Icons.mark_email_read,
+                    label: "Pagelle",
+                    onTap: () => navigateTo('/report_cards'),
+                  ),
+                  _DrawerItem(
+                    icon: Icons.book,
+                    label: "Curriculum PCTO",
+                    onTap: () => navigateTo('/curriculum'),
+                  ),
                   _DrawerItem(
                     icon: Icons.games_outlined,
                     label: "Vacanze",
@@ -138,7 +158,9 @@ class AppDrawer extends StatelessWidget {
                     label: "Trofei",
                     onTap: () => navigateTo('/achievements'),
                   ),
+
                   const Divider(),
+
                   _DrawerItem(
                     icon: Icons.settings_outlined,
                     label: "Impostazioni",

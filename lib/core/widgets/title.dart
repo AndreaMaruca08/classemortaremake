@@ -7,7 +7,14 @@ import 'drawer.dart';
 class PageTitle extends StatelessWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
   final String text;
-  const PageTitle({super.key, required this.text, required this.scaffoldKey});
+  final List<Widget>? actions;
+
+  const PageTitle({
+    super.key,
+    required this.text,
+    required this.scaffoldKey,
+    this.actions,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +32,7 @@ class PageTitle extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
+          if (actions != null) ...actions!,
           12.width,
         ]),
       ],

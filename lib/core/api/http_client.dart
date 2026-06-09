@@ -7,11 +7,7 @@ class HttpClient {
   static final HttpClient _instance = HttpClient._internal();
   factory HttpClient() => _instance;
   HttpClient._internal() {
-    settings = Settings(
-      gradeAnimationMs: 1500,
-      trendChartAnimationMs: 1500,
-      numbersChartAnimationMs: 1200,
-    );
+    settings = Settings();
   }
 
   String? token;

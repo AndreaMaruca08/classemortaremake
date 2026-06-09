@@ -1,4 +1,5 @@
 import 'package:classemortaremake/core/api/http_client.dart';
+import 'package:classemortaremake/core/extension/spacing_extension.dart';
 import 'package:classemortaremake/core/widgets/drawer.dart';
 import 'package:classemortaremake/core/widgets/title.dart';
 import 'package:classemortaremake/grades/grade_service.dart';
@@ -38,54 +39,67 @@ class _SubjectsPageState extends State<SubjectsPage> {
     return Scaffold(
       key: _scaffoldKey,
       drawer: const AppDrawer(),
-      body: FutureBuilder<List<dynamic>>(
-        future: _dataFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: Column(
+        children: [
+          _buildHeader(),
+          Expanded(
+            child: FutureBuilder<List<dynamic>>(
+              future: _dataFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-          final subjects = snapshot.data ?? [];
+                final subjects = snapshot.data ?? [];
 
-          return RefreshIndicator(
-            onRefresh: () async {
-              setState(() {
-                _dataFuture = _overviewService
-                    .fetchOverview(forceRefresh: true)
-                    .then((data) {
-                  if (data == null) return [];
-                  return GradeService.getSubjectsFromGrades(data.grades);
-                });
-              });
-              await _dataFuture;
-            },
-            child: CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: PageTitle(text: "Materie", scaffoldKey: _scaffoldKey),
-                ),
-                if (subjects.isEmpty)
-                  const SliverFillRemaining(
-                    child: Center(child: Text("Nessuna materia trovata")),
-                  )
-                else
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        return SubjectCard(
-                          subject: subjects[index],
-                          animationMs: _client.settings.gradeAnimationMs,
-                        );
-                      },
-                      childCount: subjects.length,
-                    ),
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    setState(() {
+                      _dataFuture = _overviewService
+                          .fetchOverview(forceRefresh: true)
+                          .then((data) {
+                        if (data == null) return [];
+                        return GradeService.getSubjectsFromGrades(data.grades);
+                      });
+                    });
+                    await _dataFuture;
+                  },
+                  child: CustomScrollView(
+                    slivers: [
+                      if (subjects.isEmpty)
+                        const SliverFillRemaining(
+                          child: Center(child: Text("Nessuna materia trovata")),
+                        )
+                      else
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              return SubjectCard(
+                                subject: subjects[index],
+                                animationMs: _client.settings.gradeAnimationMs,
+                              );
+                            },
+                            childCount: subjects.length,
+                          ),
+                        ),
+                      const SliverToBoxAdapter(child: SizedBox(height: 100)),
+                    ],
                   ),
-                const SliverToBoxAdapter(child: SizedBox(height: 100)),
-              ],
+                );
+              },
             ),
-          );
-        },
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Column(
+      children: [
+        PageTitle(text: "Materie", scaffoldKey: _scaffoldKey),
+        12.height,
+      ],
     );
   }
 }

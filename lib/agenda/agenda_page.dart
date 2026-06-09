@@ -251,7 +251,7 @@ class _AgendaPageState extends State<AgendaPage> {
               ),
               calendarStyle: CalendarStyle(
                 todayDecoration: BoxDecoration(
-                  color: context.colorScheme.primary.withOpacity(0.3),
+                  color: context.colorScheme.primary.withValues(alpha: 0.3),
                   shape: BoxShape.circle,
                 ),
                 selectedDecoration: BoxDecoration(
@@ -403,7 +403,7 @@ class _ViewIndicator extends StatelessWidget {
       width: isActive ? 24 : 8,
       decoration: BoxDecoration(
         color:
-            isActive ? context.colorScheme.primary : Colors.grey.withOpacity(0.3),
+            isActive ? context.colorScheme.primary : Colors.grey.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(2),
       ),
     );

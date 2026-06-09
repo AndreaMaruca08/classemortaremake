@@ -1,4 +1,5 @@
 import 'package:classemortaremake/achievement/streak.dart';
+import 'package:classemortaremake/core/api/http_client.dart';
 import 'package:classemortaremake/core/extension/spacing_extension.dart';
 import 'package:classemortaremake/core/extension/theme_extension.dart';
 import 'package:classemortaremake/core/widgets/drawer.dart';
@@ -10,6 +11,7 @@ import 'package:classemortaremake/grades/widgets/grade_circle.dart';
 import 'package:classemortaremake/grades/widgets/ratio_pie_chart.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:classemortaremake/core/services/pdf_service.dart';
 import 'Ipotetical.dart';
 import 'hypotetical_preview.dart';
 
@@ -109,9 +111,11 @@ class _SubjectDetailPageState extends State<SubjectDetailPage> {
     periodGrades.sort((a, b) => b.date.compareTo(a.date));
 
     final double average = GradeService.getAverage(periodGrades);
+    final validGrades = periodGrades.where((g) => !g.isCanceled).toList();
     final streak = Streak().getStreak(periodGrades.reversed.toList());
     final ratio = Subject.ratio(periodGrades);
     final consistency = GradeService.calculateConsistency(average, periodGrades);
+    final client = HttpClient();
 
     return Scaffold(
       key: _scaffoldKey,
@@ -119,12 +123,7 @@ class _SubjectDetailPageState extends State<SubjectDetailPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            PageTitle(
-              text: widget.subject.subjectCode
-                  + (widget.subject.subjectCode.length == 3 ?
-                  (widget.period == 3 ? " anno" : " | ${widget.period} periodo"): ""),
-              scaffoldKey: _scaffoldKey,
-            ),
+            _buildHeader(),
             16.height,
             _buildChartsHeader(),
             _buildChartsPager(average),
@@ -132,7 +131,8 @@ class _SubjectDetailPageState extends State<SubjectDetailPage> {
             24.height,
             _RecentGradesRow(
               grades: periodGrades,
-              animationMs: widget.animationMs,
+              animationMs: client.settings.gradeAnimationMs,
+              totalCount: validGrades.length,
             ),
             16.height,
             _SubjectStatsCard(
@@ -179,7 +179,7 @@ class _SubjectDetailPageState extends State<SubjectDetailPage> {
                 width: 320,
                 child: HypotheticalPreview(
                   grades: periodGrades,
-                  animationMs: widget.animationMs,
+                  animationMs: client.settings.gradeAnimationMs,
                 ),
               ),
             ),
@@ -187,6 +187,38 @@ class _SubjectDetailPageState extends State<SubjectDetailPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildHeader() {
+    final List<Grade> periodGrades = widget.subject.grades
+        .where((g) => widget.period == 3 || g.period == widget.period)
+        .toList();
+    final double average = GradeService.getAverage(periodGrades);
+    final streak = Streak().getStreak(periodGrades.reversed.toList());
+    final consistency = GradeService.calculateConsistency(average, periodGrades);
+
+    return PageTitle(
+      text: widget.subject.subjectCode +
+          (widget.subject.subjectCode.length <= 4
+              ? (widget.period == 3 ? " anno" : " | ${widget.period} periodo")
+              : ""),
+      scaffoldKey: _scaffoldKey,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.picture_as_pdf_outlined),
+          onPressed: () {
+            PdfService.generateSubjectReport(
+              subjectName: "${widget.subject.subjectFullName} ${widget.period == 3 ? "Anno" : "${widget.period}° periodo"}",
+              teacherName: widget.subject.teacherName,
+              grades: periodGrades,
+              average: average,
+              consistency: consistency,
+              streak: streak,
+            );
+          },
+        ),
+      ],
     );
   }
 
@@ -209,6 +241,8 @@ class _SubjectDetailPageState extends State<SubjectDetailPage> {
       );
     }
 
+    final client = HttpClient();
+
     return SizedBox(
       height: 300,
       child: PageView(
@@ -219,17 +253,17 @@ class _SubjectDetailPageState extends State<SubjectDetailPage> {
             spots: _trendSpots,
             color: GradeService.getGradeColor(average),
             showDots: widget.dotted || _trendSpots.length < 20,
-            animationMs: widget.animationMs,
+            animationMs: client.settings.trendChartAnimationMs,
           ),
           _LineChart(
             spots: _averageSpots,
             color: GradeService.getGradeColor(average),
             showDots: widget.dotted || _averageSpots.length < 20,
-            animationMs: widget.animationMs,
+            animationMs: client.settings.trendChartAnimationMs,
           ),
           _BarChart(
             groups: _distributionGroups,
-            animationMs: widget.animationMs,
+            animationMs: client.settings.numbersChartAnimationMs,
             maxFrequency: _maxFrequency,
           ),
         ],
@@ -249,7 +283,7 @@ class _SubjectDetailPageState extends State<SubjectDetailPage> {
             shape: BoxShape.circle,
             color: _currentPage == index
                 ? GradeService.getGradeColor(average)
-                : Colors.grey.withOpacity(0.3),
+                : Colors.grey.withValues(alpha: 0.3),
           ),
         );
       }),
@@ -284,12 +318,29 @@ class _LineChart extends StatelessWidget {
 
           return LineChart(
             LineChartData(
+              extraLinesData: ExtraLinesData(
+                horizontalLines: [
+                  HorizontalLine(
+                    y: 6,
+                    color: Colors.grey.withValues(alpha: 0.5),
+                    strokeWidth: 1.5,
+                    dashArray: [5, 5],
+                    label: HorizontalLineLabel(
+                      show: true,
+                      alignment: Alignment.topRight,
+                      padding: const EdgeInsets.only(right: 5, bottom: 2),
+                      style: const TextStyle(color: Colors.grey, fontSize: 10),
+                      labelResolver: (_) => "6.0",
+                    ),
+                  ),
+                ],
+              ),
               gridData: FlGridData(
                 show: true,
                 getDrawingHorizontalLine: (v) =>
-                    FlLine(color: Colors.grey.withOpacity(0.1), strokeWidth: 1),
+                    FlLine(color: Colors.grey.withValues(alpha: 0.1), strokeWidth: 1),
                 getDrawingVerticalLine: (v) =>
-                    FlLine(color: Colors.grey.withOpacity(0.1), strokeWidth: 1),
+                    FlLine(color: Colors.grey.withValues(alpha: 0.1), strokeWidth: 1),
               ),
               titlesData: FlTitlesData(
                 leftTitles: AxisTitles(
@@ -320,7 +371,7 @@ class _LineChart extends StatelessWidget {
                   dotData: FlDotData(show: showDots),
                   belowBarData: BarAreaData(
                     show: true,
-                    color: color.withOpacity(0.1),
+                    color: color.withValues(alpha: 0.1),
                   ),
                 ),
               ],
@@ -428,10 +479,12 @@ class _BarChart extends StatelessWidget {
 class _RecentGradesRow extends StatelessWidget {
   final List<Grade> grades;
   final int animationMs;
+  final int totalCount;
 
   const _RecentGradesRow({
     required this.grades,
     required this.animationMs,
+    required this.totalCount,
   });
 
   @override
@@ -441,7 +494,16 @@ class _RecentGradesRow extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Text("Ultimi voti", style: context.textTheme.titleMedium),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Ultimi voti", style: context.textTheme.titleMedium),
+              Text(
+                "Totali: $totalCount",
+                style: context.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
         ),
         8.height,
         SizedBox(
@@ -455,7 +517,7 @@ class _RecentGradesRow extends StatelessWidget {
               child: GradeCircle(
                 grade: grades[i],
                 size: 85,
-                fontSize: 25,
+                fontSize: 30,
                 animationMs: animationMs,
                 showDetailOnTap: true,
               ),

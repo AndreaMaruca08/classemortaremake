@@ -26,17 +26,30 @@ class _AuthWrapperState extends State<AuthWrapper> {
   Future<void> _checkAuthentication() async {
     final credentials = await _storageService.getCredentials();
 
-    if (credentials != null && credentials.code.isNotEmpty && credentials.pass.isNotEmpty) {
+    if (credentials != null && 
+        credentials.code.isNotEmpty && 
+        credentials.pass.isNotEmpty) {
       final client = HttpClient();
       client.init(credentials.code, credentials.pass, widget.isPreviousYear);
 
       try {
         final response = await client.doLogin();
         if (mounted) {
-          setState(() {
-            _isAuthenticated = (response != null && response['token'] != null);
-            _isLoading = false;
-          });
+          if (response != null && response['token'] != null) {
+            setState(() {
+              _isAuthenticated = true;
+              _isLoading = false;
+            });
+            // Update names in storage
+            credentials.firstName = response['firstName'];
+            credentials.lastName = response['lastName'];
+            await _storageService.addAccount(credentials);
+          } else {
+            setState(() {
+              _isAuthenticated = false;
+              _isLoading = false;
+            });
+          }
         }
       } catch (e) {
         if (mounted) {

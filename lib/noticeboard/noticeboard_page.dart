@@ -1,6 +1,7 @@
+import 'package:classemortaremake/core/widgets/drawer.dart';
+import 'package:classemortaremake/core/widgets/title.dart';
 import 'package:flutter/material.dart';
 import 'package:classemortaremake/core/extension/spacing_extension.dart';
-import 'package:classemortaremake/core/extension/theme_extension.dart';
 import 'notice.dart';
 import 'noticeboard_service.dart';
 import 'widgets/notice_card.dart';
@@ -13,6 +14,7 @@ class NoticeboardPage extends StatefulWidget {
 }
 
 class _NoticeboardPageState extends State<NoticeboardPage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final NoticeboardService _service = NoticeboardService();
   late Future<List<List<Notice>>> _noticeFuture;
 
@@ -25,54 +27,69 @@ class _NoticeboardPageState extends State<NoticeboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notizie'),
-      ),
-      body: FutureBuilder<List<List<Notice>>>(
-        future: _noticeFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text("Errore: ${snapshot.error}"));
-          }
-          if (!snapshot.hasData || snapshot.data!.every((list) => list.isEmpty)) {
-            return const Center(
-              child: Padding(
-                padding: EdgeInsets.all(32.0),
-                child: Text(
-                  'Nessuna notizia disponibile al momento.',
-                  style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
-                ),
-              ),
-            );
-          }
+      key: _scaffoldKey,
+      drawer: const AppDrawer(),
+      body: Column(
+        children: [
+          _buildHeader(),
+          Expanded(
+            child: FutureBuilder<List<List<Notice>>>(
+              future: _noticeFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text("Errore: ${snapshot.error}"));
+                }
+                if (!snapshot.hasData || snapshot.data!.every((list) => list.isEmpty)) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(32.0),
+                      child: Text(
+                        'Nessuna notizia disponibile al momento.',
+                        style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
+                      ),
+                    ),
+                  );
+                }
 
-          final circolari = snapshot.data![0];
-          final variazioniOrario = snapshot.data![1];
-          final variazioniAula = snapshot.data![2];
-          final altro = snapshot.data![3];
+                final circolari = snapshot.data![0];
+                final variazioniOrario = snapshot.data![1];
+                final variazioniAula = snapshot.data![2];
+                final altro = snapshot.data![3];
 
-          return SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (variazioniOrario.isNotEmpty)
-                  _buildHorizontalSection("Variazioni di orario", variazioniOrario),
-                if (variazioniAula.isNotEmpty)
-                  _buildHorizontalSection("Variazioni di aula", variazioniAula),
-                if (circolari.isNotEmpty)
-                  _buildHorizontalSection("Circolari", circolari),
-                if (altro.isNotEmpty)
-                  _buildHorizontalSection("Altro", altro),
-                100.height,
-              ],
+                return SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (variazioniOrario.isNotEmpty)
+                        _buildHorizontalSection("Variazioni di orario", variazioniOrario),
+                      if (variazioniAula.isNotEmpty)
+                        _buildHorizontalSection("Variazioni di aula", variazioniAula),
+                      if (circolari.isNotEmpty)
+                        _buildHorizontalSection("Circolari", circolari),
+                      if (altro.isNotEmpty)
+                        _buildHorizontalSection("Altro", altro),
+                      100.height,
+                    ],
+                  ),
+                );
+              },
             ),
-          );
-        },
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Column(
+      children: [
+        PageTitle(text: "Notizie", scaffoldKey: _scaffoldKey),
+        12.height,
+      ],
     );
   }
 
@@ -88,7 +105,7 @@ class _NoticeboardPageState extends State<NoticeboardPage> {
           ),
         ),
         SizedBox(
-          height: 320, // Increased height to accommodate content expansion
+          height: 320,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 8),

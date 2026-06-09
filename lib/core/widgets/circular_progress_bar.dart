@@ -87,7 +87,7 @@ class CircularProgressBar extends StatelessWidget {
             painter: CircleProgressPainter(
               progress: progress,
               strokeWidth: strokeWidth,
-              backgroundColor: color.withOpacity(0.2),
+              backgroundColor: color.withValues(alpha: 0.2),
               progressColor: color,
             ),
           ),

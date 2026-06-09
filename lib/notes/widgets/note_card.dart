@@ -19,7 +19,7 @@ class NoteCard extends StatelessWidget {
       width: 280,
       padding: const EdgeInsets.all(16),
       decoration: context.containerDecoration.copyWith(
-        border: Border.all(color: color.withOpacity(0.3), width: 1),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

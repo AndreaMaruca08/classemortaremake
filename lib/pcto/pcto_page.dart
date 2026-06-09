@@ -31,7 +31,7 @@ class _PctoPageState extends State<PctoPage> {
       drawer: const AppDrawer(),
       body: Column(
         children: [
-          PageTitle(text: "Percorso PCTO", scaffoldKey: _scaffoldKey),
+          _buildHeader(),
           Expanded(
             child: FutureBuilder<CurriculumData>(
               future: _curriculumFuture,
@@ -85,6 +85,15 @@ class _PctoPageState extends State<PctoPage> {
     );
   }
 
+  Widget _buildHeader() {
+    return Column(
+      children: [
+        PageTitle(text: "Percorso PCTO", scaffoldKey: _scaffoldKey),
+        12.height,
+      ],
+    );
+  }
+
   Widget _buildSummaryCard(CurriculumData data, double progress, bool isCompleted, int targetHours) {
     final Color brightGreen = isCompleted ? const Color(0xFF00E676) : const Color(0xFFB2FF59);
     final Color accentColor = isCompleted ? const Color(0xFF00E676) : context.colorScheme.primary;
@@ -95,7 +104,7 @@ class _PctoPageState extends State<PctoPage> {
         gradient: LinearGradient(
           colors: [
             context.colorScheme.surface,
-            accentColor.withOpacity(0.1),
+            accentColor.withValues(alpha: 0.1),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -119,7 +128,7 @@ class _PctoPageState extends State<PctoPage> {
                       color: brightGreen,
                       shadows: [
                         Shadow(
-                          color: brightGreen.withOpacity(isCompleted ? 0.8 : 0.4), 
+                          color: brightGreen.withValues(alpha: isCompleted ? 0.8 : 0.4), 
                           blurRadius: isCompleted ? 20 : 8
                         )
                       ],
@@ -130,14 +139,14 @@ class _PctoPageState extends State<PctoPage> {
               Icon(
                 isCompleted ? Icons.verified : Icons.pending_actions,
                 size: 56,
-                color: brightGreen.withOpacity(0.8),
+                color: brightGreen.withValues(alpha: 0.8),
               ),
             ],
           ),
           20.height,
           LinearProgressIndicator(
             value: progress,
-            backgroundColor: Colors.grey.withOpacity(0.2),
+            backgroundColor: Colors.grey.withValues(alpha: 0.2),
             color: brightGreen,
             borderRadius: BorderRadius.circular(10),
             minHeight: 8,
@@ -181,7 +190,7 @@ class _ExperienceCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: context.containerDecoration.copyWith(
-        border: Border.all(color: accentColor.withOpacity(0.3), width: 1),
+        border: Border.all(color: accentColor.withValues(alpha: 0.3), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -212,8 +221,8 @@ class _ExperienceCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               value: progress,
-              backgroundColor: Colors.grey.withOpacity(0.1),
-              color: accentColor.withOpacity(0.5),
+              backgroundColor: Colors.grey.withValues(alpha: 0.1),
+              color: accentColor.withValues(alpha: 0.5),
               minHeight: 4,
             ),
           ),

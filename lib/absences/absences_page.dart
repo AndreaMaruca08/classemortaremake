@@ -1,3 +1,5 @@
+import 'package:classemortaremake/core/widgets/drawer.dart';
+import 'package:classemortaremake/core/widgets/title.dart';
 import 'package:flutter/material.dart';
 import 'package:classemortaremake/core/extension/spacing_extension.dart';
 import 'package:classemortaremake/core/extension/theme_extension.dart';
@@ -13,61 +15,84 @@ class AbsencesPage extends StatefulWidget {
   State<AbsencesPage> createState() => _AbsencesPageState();
 }
 
-class _AbsencesPageState extends State<AbsencesPage> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _AbsencesPageState extends State<AbsencesPage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final OverviewService _overviewService = OverviewService();
+  final PageController _pageController = PageController();
   late Future<OverviewData?> _overviewFuture;
+  int _currentPage = 0;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
     _overviewFuture = _overviewService.fetchOverview();
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Assenze e Ritardi"),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: "Assenze"),
-            Tab(text: "Ritardi"),
-            Tab(text: "Uscite"),
+      key: _scaffoldKey,
+      drawer: const AppDrawer(),
+      body: Column(
+        children: [
+          _buildHeader(),
+          Expanded(
+            child: FutureBuilder<OverviewData?>(
+              future: _overviewFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError || snapshot.data == null) {
+                  return const Center(child: Text("Errore durante il caricamento"));
+                }
+
+                final data = snapshot.data!;
+                final delays = [...data.delays, ...data.shortDelays];
+
+                return PageView(
+                  controller: _pageController,
+                  onPageChanged: (i) => setState(() => _currentPage = i),
+                  children: [
+                    _AttendanceList(list: data.absences, color: Colors.red),
+                    _AttendanceList(list: delays, color: Colors.orange),
+                    _AttendanceList(list: data.exits, color: Colors.blue),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    String title = "Assenze";
+    if (_currentPage == 1) title = "Ritardi";
+    if (_currentPage == 2) title = "Uscite";
+
+    return Column(
+      children: [
+        PageTitle(text: title, scaffoldKey: _scaffoldKey),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _ViewIndicator(isActive: _currentPage == 0),
+            8.width,
+            _ViewIndicator(isActive: _currentPage == 1),
+            8.width,
+            _ViewIndicator(isActive: _currentPage == 2),
           ],
         ),
-      ),
-      body: FutureBuilder<OverviewData?>(
-        future: _overviewFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError || snapshot.data == null) {
-            return const Center(child: Text("Errore durante il caricamento"));
-          }
-
-          final data = snapshot.data!;
-          final delays = [...data.delays, ...data.shortDelays];
-
-          return TabBarView(
-            controller: _tabController,
-            children: [
-              _AttendanceList(list: data.absences, color: Colors.red),
-              _AttendanceList(list: delays, color: Colors.orange),
-              _AttendanceList(list: data.exits, color: Colors.blue),
-            ],
-          );
-        },
-      ),
+        12.height,
+      ],
     );
   }
 }
@@ -85,7 +110,7 @@ class _AttendanceList extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.check_circle_outline, size: 64, color: Colors.green.withOpacity(0.5)),
+            Icon(Icons.check_circle_outline, size: 64, color: Colors.green.withValues(alpha: 0.5)),
             16.height,
             const Text("Ottimo! Nessun evento registrato."),
           ],
@@ -93,7 +118,6 @@ class _AttendanceList extends StatelessWidget {
       );
     }
 
-    // Sort by date descending
     final sortedList = List<Attendance>.from(list)..sort((a, b) => b.date.compareTo(a.date));
 
     return ListView.builder(
@@ -109,7 +133,7 @@ class _AttendanceList extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: color.withOpacity(0.2),
+              backgroundColor: color.withValues(alpha: 0.2),
               child: Icon(Icons.event_note, color: color),
             ),
             title: Text(
@@ -148,6 +172,23 @@ class _AttendanceList extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _ViewIndicator extends StatelessWidget {
+  final bool isActive;
+  const _ViewIndicator({required this.isActive});
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      height: 4,
+      width: isActive ? 24 : 8,
+      decoration: BoxDecoration(
+        color: isActive ? context.colorScheme.primary : Colors.grey.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(2),
+      ),
     );
   }
 }

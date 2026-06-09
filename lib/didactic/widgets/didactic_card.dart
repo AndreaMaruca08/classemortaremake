@@ -54,7 +54,7 @@ class DidacticCard extends StatelessWidget {
       width: horizontal ? 280 : double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: context.containerDecoration.copyWith(
-        border: Border.all(color: teacherColor.withOpacity(0.5), width: 1.5),
+        border: Border.all(color: teacherColor.withValues(alpha: 0.5), width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,7 +62,7 @@ class DidacticCard extends StatelessWidget {
           Row(
             children: [
               CircleAvatar(
-                backgroundColor: teacherColor.withOpacity(0.2),
+                backgroundColor: teacherColor.withValues(alpha: 0.2),
                 radius: 14,
                 child: Text(
                   item.teacher.isNotEmpty ? item.teacher[0].toUpperCase() : "?",
@@ -108,7 +108,7 @@ class DidacticCard extends StatelessWidget {
                 child: IconButton(
                   padding: EdgeInsets.zero,
                   style: IconButton.styleFrom(
-                    backgroundColor: teacherColor.withOpacity(0.1),
+                    backgroundColor: teacherColor.withValues(alpha: 0.1),
                     foregroundColor: teacherColor,
                   ),
                   onPressed: () async {

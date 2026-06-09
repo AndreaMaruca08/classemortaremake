@@ -1,11 +1,13 @@
+import 'package:classemortaremake/core/widgets/title.dart';
 import 'package:classemortaremake/core/extension/spacing_extension.dart';
 import 'package:classemortaremake/core/extension/theme_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../core/widgets/drawer.dart';
 import 'grade.dart';
 import 'widgets/grade_circle.dart';
 
-class GradeDetail extends StatelessWidget {
+class GradeDetail extends StatefulWidget {
   final Grade grade;
   final Grade? previousGrade;
   final int animationMs;
@@ -18,70 +20,81 @@ class GradeDetail extends StatelessWidget {
   });
 
   @override
+  State<GradeDetail> createState() => _GradeDetailState();
+}
+
+class _GradeDetailState extends State<GradeDetail> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dettagli voto'),
-      ),
+      key: _scaffoldKey,
+      drawer: const AppDrawer(),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
+            PageTitle(text: "Dettagli voto", scaffoldKey: _scaffoldKey),
+            24.height,
             Center(
               child: GradeCircle(
-                grade: grade,
-                previousGrade: previousGrade,
+                grade: widget.grade,
+                previousGrade: widget.previousGrade,
                 size: 140,
                 fontSize: 28,
-                animationMs: animationMs,
+                animationMs: widget.animationMs,
               ),
             ),
             24.height,
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: context.containerDecoration,
-              child: Column(
-                children: [
-                  _DetailRow(
-                    icon: Icons.calendar_today_outlined,
-                    label: "Data:",
-                    value: _formatDate(grade.date),
-                  ),
-                  _DetailRow(
-                    icon: Icons.access_time_outlined,
-                    label: "Periodo:",
-                    value: grade.period == 1 ? "1° quadrimestre" : "2° quadrimestre",
-                  ),
-                  _DetailRow(
-                    icon: Icons.book_outlined,
-                    label: "Materia:",
-                    value: grade.subjectFullName,
-                  ),
-                  _DetailRow(
-                    icon: Icons.description_outlined,
-                    label: "Descrizione:",
-                    value: grade.description.isEmpty ? "Nessuna descrizione" : grade.description,
-                  ),
-                  _DetailRow(
-                    icon: Icons.category_outlined,
-                    label: "Tipologia:",
-                    value: grade.type,
-                  ),
-                  _DetailRow(
-                    icon: Icons.person_outline,
-                    label: "Docente:",
-                    value: grade.teacherName.isEmpty ? "Docente sconosciuto" : grade.teacherName,
-                  ),
-                  if (previousGrade != null) ...[
-                    const Divider(),
-                    _ProgressSection(
-                      currentGrade: grade,
-                      previousGrade: previousGrade!,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: context.containerDecoration,
+                child: Column(
+                  children: [
+                    _DetailRow(
+                      icon: Icons.calendar_today_outlined,
+                      label: "Data:",
+                      value: _formatDate(widget.grade.date),
                     ),
+                    _DetailRow(
+                      icon: Icons.access_time_outlined,
+                      label: "Periodo:",
+                      value: widget.grade.period == 1 ? "1° quadrimestre" : "2° quadrimestre",
+                    ),
+                    _DetailRow(
+                      icon: Icons.book_outlined,
+                      label: "Materia:",
+                      value: widget.grade.subjectFullName,
+                    ),
+                    _DetailRow(
+                      icon: Icons.description_outlined,
+                      label: "Descrizione:",
+                      value: widget.grade.description.isEmpty ? "Nessuna descrizione" : widget.grade.description,
+                    ),
+                    _DetailRow(
+                      icon: Icons.category_outlined,
+                      label: "Tipologia:",
+                      value: widget.grade.type,
+                    ),
+                    _DetailRow(
+                      icon: Icons.person_outline,
+                      label: "Docente:",
+                      value: widget.grade.teacherName.isEmpty ? "Docente sconosciuto" : widget.grade.teacherName,
+                    ),
+                    if (widget.previousGrade != null) ...[
+                      const Divider(),
+                      _ProgressSection(
+                        currentGrade: widget.grade,
+                        previousGrade: widget.previousGrade!,
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
+            100.height,
           ],
         ),
       ),
@@ -110,8 +123,7 @@ class _DetailRow extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.value,
-    this.valueColor,
-  });
+  }) : valueColor = null;
 
   @override
   Widget build(BuildContext context) {

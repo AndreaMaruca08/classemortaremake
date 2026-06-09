@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
-import 'package:open_file_plus/open_file_plus.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:mime/mime.dart';
 import '../api/http_client.dart';
 
@@ -13,21 +13,17 @@ class FileService {
     required String fileName,
   }) async {
     try {
-      // Puliamo l'URL per assicurarci di non avere baseUrl doppie o slash di troppo
       String endpoint = url;
       if (url.startsWith('http')) {
-        // Se è un URL completo, cerchiamo di estrarre la parte relativa
         if (url.contains(_client.baseUrl)) {
           endpoint = url.replaceFirst(_client.baseUrl, '');
         } else {
-          // Se è un URL esterno, usiamo HttpClient.getExternal
           final response = await _client.getExternal(url);
           await _processResponse(response, fileName);
           return;
         }
       }
       
-      // Rimuoviamo eventuale slash iniziale perché HttpClient.get lo aggiunge o gestisce la baseUrl
       if (endpoint.startsWith('/')) {
         endpoint = endpoint.substring(1);
       }
@@ -61,7 +57,7 @@ class FileService {
       await file.writeAsBytes(bytes);
 
       if (await file.exists()) {
-        await OpenFile.open(file.path);
+        await OpenFilex.open(file.path);
       }
     } else {
       throw Exception('Errore download: ${response.statusCode}');

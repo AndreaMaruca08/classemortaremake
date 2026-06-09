@@ -43,7 +43,7 @@ class _HolidaysPageState extends State<HolidaysPage> {
       drawer: const AppDrawer(),
       body: Column(
         children: [
-          PageTitle(text: "Vacanze", scaffoldKey: _scaffoldKey),
+          _buildHeader(),
           Expanded(
             child: FutureBuilder<List<HolidayPeriod>>(
               future: _holidaysFuture,
@@ -102,6 +102,15 @@ class _HolidaysPageState extends State<HolidaysPage> {
     );
   }
 
+  Widget _buildHeader() {
+    return Column(
+      children: [
+        PageTitle(text: "Vacanze", scaffoldKey: _scaffoldKey),
+        12.height,
+      ],
+    );
+  }
+
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
@@ -133,7 +142,7 @@ class _SpecialEventCard extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             context.colorScheme.surface,
-            context.colorScheme.primary.withOpacity(0.1),
+            context.colorScheme.primary.withValues(alpha: 0.1),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -216,7 +225,7 @@ class _HolidayPeriodCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: context.containerDecoration.copyWith(
-        border: Border.all(color: accentColor.withOpacity(0.3), width: 1),
+        border: Border.all(color: accentColor.withValues(alpha: 0.3), width: 1),
       ),
       child: Column(
         children: [
@@ -234,7 +243,7 @@ class _HolidayPeriodCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: accentColor.withOpacity(0.1),
+                  color: accentColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -251,7 +260,7 @@ class _HolidayPeriodCard extends StatelessWidget {
               Text(_formatDate(period.start), style: const TextStyle(fontWeight: FontWeight.w600)),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Icon(Icons.arrow_forward, size: 16, color: Colors.grey.withOpacity(0.5)),
+                child: Icon(Icons.arrow_forward, size: 16, color: Colors.grey.withValues(alpha: 0.5)),
               ),
               Text(_formatDate(period.end), style: const TextStyle(fontWeight: FontWeight.w600)),
             ],

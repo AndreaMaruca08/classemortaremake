@@ -1,9 +1,45 @@
+import 'dart:convert';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import '../core/api/http_client.dart';
 import 'grade.dart';
 import 'subject.dart';
 
 class GradeService {
+  static final GradeService _instance = GradeService._internal();
+  factory GradeService() => _instance;
+  GradeService._internal();
+
+  final HttpClient _client = HttpClient();
+  List<Grade>? _cachedGrades;
+
+  Future<List<Grade>> fetchGrades({bool forceRefresh = false}) async {
+    if (_cachedGrades != null && !forceRefresh) {
+      return _cachedGrades!;
+    }
+
+    final endpoint = "students/${_client.numericCode}/grades";
+    final response = await _client.get(endpoint);
+
+    if (response.statusCode == 200) {
+      try {
+        final json = jsonDecode(response.body);
+        _cachedGrades = Grade.forAchievement(json['grades'] ?? []);
+        return _cachedGrades!;
+      } catch (e) {
+        print("Error parsing grades data: $e");
+        return [];
+      }
+    } else {
+      print("Failed to fetch grades: ${response.statusCode}");
+      return [];
+    }
+  }
+
+  void clearCache() {
+    _cachedGrades = null;
+  }
+
   static List<Grade> getGeneralAverages(List<Grade> grades) {
     double totalSum = 0.0;
     double p1Sum = 0.0;

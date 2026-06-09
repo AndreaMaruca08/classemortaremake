@@ -2,11 +2,13 @@ class LessonHour {
   String subject;
   List<String> teachers;
   int hour;
+  String description;
 
   LessonHour({
     required this.subject,
     required this.teachers,
     required this.hour,
+    required this.description,
   });
 
   factory LessonHour.fromJson(Map<String, dynamic> json) {
@@ -22,6 +24,7 @@ class LessonHour {
       subject: json['subjectDesc'] ?? "",
       teachers: teachersList,
       hour: json['evtHPos'] ?? 0,
+      description: json['lessonArg'] ?? "",
     );
   }
 

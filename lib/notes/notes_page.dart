@@ -2,7 +2,6 @@ import 'package:classemortaremake/core/widgets/drawer.dart';
 import 'package:classemortaremake/core/widgets/title.dart';
 import 'package:flutter/material.dart';
 import 'package:classemortaremake/core/extension/spacing_extension.dart';
-import 'package:classemortaremake/core/extension/theme_extension.dart';
 import 'note.dart';
 import 'notes_service.dart';
 import 'widgets/note_card.dart';
