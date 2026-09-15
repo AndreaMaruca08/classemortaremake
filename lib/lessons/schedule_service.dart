@@ -10,11 +10,22 @@ class ScheduleService {
     final now = DateTime.now();
     final int weekday = now.weekday;
     
+    final today = DateTime(now.year, now.month, now.day);
     // Monday of this week
-    final mondayThisWeek = now.subtract(Duration(days: weekday - 1));
-    // We want data for the last 4 weeks to build a reliable schedule
-    final startRange = mondayThisWeek.subtract(const Duration(days: 28));
-    final endRange = mondayThisWeek.add(const Duration(days: 4)); // Till Friday of this week
+    final mondayThisWeek = today.subtract(Duration(days: weekday - 1));
+
+    final int schoolYearStartYear = now.month >= 9 ? now.year : now.year - 1;
+    final schoolYearStart = DateTime(schoolYearStartYear, 9, 1);
+
+    DateTime startRange = mondayThisWeek.subtract(const Duration(days: 28));
+    if (startRange.isBefore(schoolYearStart)) {
+      startRange = schoolYearStart;
+    }
+
+    final endRange = mondayThisWeek.add(const Duration(days: 4));
+    if (startRange.isAfter(endRange)) {
+      startRange = endRange;
+    }
 
     final startStr = _formatDate(startRange);
     final endStr = _formatDate(endRange);
@@ -37,11 +48,12 @@ class ScheduleService {
       lessonsByDate.putIfAbsent(date, () => []).add(hour);
     }
 
-    // Processed weeks
-    final List<Day> week1 = _buildWeek(mondayThisWeek.subtract(const Duration(days: 7)), lessonsByDate);
-    final List<Day> week2 = _buildWeek(mondayThisWeek.subtract(const Duration(days: 14)), lessonsByDate);
+    // Processed weeks: week1 is current week, week2 is previous week
+    final List<Day> week1 = _buildWeek(mondayThisWeek, lessonsByDate);
+    final List<Day> week2 = _buildWeek(mondayThisWeek.subtract(const Duration(days: 7)), lessonsByDate);
 
-    return [week1, week2];
+    final bool week2Empty = week2.every((d) => d.hours.isEmpty);
+    return [week1, week2Empty ? week1 : week2];
   }
 
   List<Day> _buildWeek(DateTime monday, Map<String, List<LessonHour>> data) {
@@ -75,8 +87,8 @@ class ScheduleService {
   }
 
   LessonHour? _findBestMatchForHour(DateTime date, int hourNum, Map<String, List<LessonHour>> data, Set<String> supportTeachers) {
-    // Search current week, then -1, then -2
-    for (int weekOffset = 0; weekOffset <= 2; weekOffset++) {
+    // Search current week, then -1, -2, -3
+    for (int weekOffset = 0; weekOffset <= 3; weekOffset++) {
       final checkDate = date.subtract(Duration(days: 7 * weekOffset));
       final dateStr = _formatDateWithDashes(checkDate);
       final lessons = data[dateStr];

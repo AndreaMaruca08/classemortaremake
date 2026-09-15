@@ -21,7 +21,7 @@ class LessonService {
     final String dateStr = "${date.year}${date.month.toString().padLeft(2, '0')}${date.day.toString().padLeft(2, '0')}";
     final endpoint = "students/${_client.numericCode}/lessons/$dateStr";
     final response = await _client.get(endpoint);
-    
+
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
       return LessonHour.fromJsonList(json);

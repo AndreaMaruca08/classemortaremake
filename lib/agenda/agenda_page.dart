@@ -25,7 +25,7 @@ class _AgendaPageState extends State<AgendaPage> {
 
   bool _showDone = true;
   bool _showPast = false;
-  int _currentView = 0; // 0 for List, 1 for Calendar
+  int _currentView = 0;
 
   SharedPreferences? _prefs;
   DateTime _focusedDay = DateTime.now();

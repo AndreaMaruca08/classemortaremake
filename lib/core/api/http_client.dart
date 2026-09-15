@@ -23,7 +23,7 @@ class HttpClient {
 
   String get baseUrl {
     if (isPreviousYear) {
-      final String year = (DateTime.now().year - 2002).toString();
+      final String year = (DateTime.now().year - 2001).toString();
       return "https://web$year.spaggiari.eu/rest/v1/";
     }
     return "https://web.spaggiari.eu/rest/v1/";

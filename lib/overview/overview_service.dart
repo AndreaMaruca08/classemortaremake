@@ -52,6 +52,6 @@ class OverviewService {
     }
 
     int yearEnd = yearStart + 1;
-    return "${yearStart}0901/${yearEnd}0831";
+    return "${yearStart}0901/${yearEnd}0830";
   }
 }
